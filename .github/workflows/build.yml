@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
@@ -28,7 +28,6 @@ jobs:
         sed -i 's/#requirements = python3,kivy/requirements = python3,pygame/g' buildozer.spec
         sed -i 's/package.name = myapp/package.name = zombiegame/g' buildozer.spec
         sed -i 's/package.domain = org.test/package.domain = org.zombie/g' buildozer.spec
-        
         buildozer -v android debug
 
     - name: Upload APK
