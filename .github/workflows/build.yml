@@ -9,17 +9,57 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout
+    - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Build with Buildozer
-      uses: ArtemGr/buildozer-action@v1
-      id: buildozer
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        command: buildozer android debug
+        python-version: '3.10'
 
-    - name: Upload APK
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+            python3-pip \
+            build-essential \
+            git \
+            python3-dev \
+            ffmpeg \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            zlib1g-dev \
+            libffi-dev \
+            libssl-dev \
+            autoconf \
+            libtool \
+            pkg-config \
+            ant \
+            openjdk-17-jdk \
+            zip \
+            unzip \
+            adb \
+            jarsigner
+
+    - name: Install Buildozer and Cython
+      run: |
+        pip install --upgrade pip
+        pip install --upgrade cython buildozer
+
+    - name: Build APK with Buildozer
+      run: |
+        buildozer init || true
+        sed -i 's/#requirements = python3,kivy/requirements = python3,pygame/g' buildozer.spec
+        buildozer -v android debug
+
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: apk-dosyasi
+        name: zombie-apk
         path: bin/*.apk
